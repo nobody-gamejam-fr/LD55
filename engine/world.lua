@@ -1,6 +1,8 @@
 require("helpers")
+require("overlays")
+
 gOff = {x = 0, y = 0} -- global offset
-hazards = {}
+
 Body = { -- call Body:new() for a new class and body:spawn() for an instance (also applies to any subclass)
   new = function(self, obj)
     obj = obj or {}
@@ -50,27 +52,42 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     else love.graphics.draw(self.sprite, self.x + gOff.x, self.y + gOff.y, 0) end-- img, x, y, rotation (rad), scaleX, scaleY, originX, originY...
   end
 }
+
+hazards = {}
 Hazard = Body:new()
 function Hazard:init()
   Body.init(self)
   table.insert(hazards, self)
 end
-local tiles = {roof = {Hazard:spawn({spritePath = 'roof.png'})}, floor = {Hazard:spawn({spritePath = 'floor.png', alignToBottom = true})}}
+
+backgroundTiles = {}
+BackgroundTile = Body:new()
+function BackgroundTile:init()
+    Body.init(self)
+    table.insert(backgroundTiles, self)
+end
+
+local tiles = {
+    roof = { Hazard:spawn({spritePath = 'roof.png'}) },
+    floor = { --[[Hazard:spawn({spritePath = 'floor.png', alignToBottom = true})]] },
+    floorBG = { BackgroundTile:spawn({spritePath = "floor.png", alignToBottom = true}) },
+}
 local add_tile = function(tab, tile, prop)
   if tile[prop] < tab[1][prop] then table.insert(tab, 1, tile)
   else table.insert(tab, tile) end
 end
 
 drawWorld = function()
-  local xoff = nil  
-  if tiles.roof[1].x + gOff.x > 0 then xoff = tiles.roof[1].x - tiles.roof[1].w
-  elseif tiles.roof[#tiles.roof].x + gOff.x < love.graphics.getWidth() then xoff = tiles.roof[#tiles.roof].x + tiles.roof[#tiles.roof].w end
-  
-  if xoff ~= nil then -- assumes floor and roof are same width
-    add_tile(tiles.roof, Hazard:spawn({spritePath = 'roof.png', x = xoff}), 'x')
-    add_tile(tiles.floor, Hazard:spawn({spritePath = 'floor.png', x = xoff, alignToBottom = true}), 'y')
-  end
-  
+    local xoff = nil
+    if tiles.roof[1].x + gOff.x > 0 then xoff = tiles.roof[1].x - tiles.roof[1].w
+    elseif tiles.roof[#tiles.roof].x + gOff.x < love.graphics.getWidth() then xoff = tiles.roof[#tiles.roof].x + tiles.roof[#tiles.roof].w end
+
+    if xoff ~= nil then -- assumes floor and roof are same width
+        add_tile(tiles.roof, Hazard:spawn({spritePath = 'roof.png', x = xoff}), 'x')
+        --add_tile(tiles.floor, Hazard:spawn({spritePath = 'floor.png', x = xoff, alignToBottom = true}), 'y')
+        add_tile(tiles.floorBG, BackgroundTile:spawn({spritePath = "floor.png", x = xoff, alignToBottom = true}), "y")
+    end
+
   for k,v in pairs(tiles) do
     for _, tile in ipairs(v) do
       if not ((tile.x + tile.w + gOff.x) < 0 or (tile.x + gOff.x) > love.graphics.getWidth()) then tile:draw() end
