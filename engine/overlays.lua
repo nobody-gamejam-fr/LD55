@@ -71,6 +71,8 @@ function UIButton:init()
 
     self.enabled = self.enabled or true
 
+    self.onClick = self.onClick or function() end
+
     self.text = self.text or "Button"
     self.hovering = false
 
@@ -112,6 +114,69 @@ function UIButton:draw()
     love.graphics.setColor(self.textColorR, self.textColorG, self.textColorB, self.textColorA)
     drawCenteredText(self.x, self.y, self.w, self.h, self.text)
     love.graphics.reset()
+end
+
+UIImageButton = UIButton:new()
+function UIImageButton:init()
+    UIButton.init(self)
+    if self.spritePath ~= nil then
+        self.sprite, self.masks = clipMask(self.spritePath)
+    end
+end
+function UIImageButton:draw()
+    UIElement:draw()
+    if not self.enabled then
+        love.graphics.setColor(self.disabledColorR, self.disabledColorG, self.disabledColorB, self.disabledColorA)
+    elseif self.hovering then
+        love.graphics.setColor(self.hoverColorR, self.hoverColorG, self.hoverColorB, self.hoverColorA)
+    else
+        love.graphics.setColor(self.colorR, self.colorG, self.colorB, self.colorA)
+    end
+
+    love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
+    love.graphics.setColor(self.textColorR, self.textColorG, self.textColorB, self.textColorA)
+    love.graphics.draw(self.sprite, self.x + self.w / 2 - self.sprite:getWidth() / 2, self.y + self.h / 2 - self.sprite:getHeight() / 2, 0)
+    love.graphics.reset()
+end
+
+UILabel = UIElement:new()
+function UILabel:init()
+    UIElement.init(self)
+    self.backgroundColorR = self.backgroundColorR or 0.2
+    self.backgroundColorG = self.backgroundColorG or 0.2
+    self.backgroundColorB = self.backgroundColorB or 0.2
+    self.backgroundColorA = self.backgroundColorA or 1.0
+
+    self.textColorR = self.textColorR or 1.0
+    self.textColorG = self.textColorG or 1.0
+    self.textColorB = self.textColorB or 1.0
+    self.textColorA = self.textColorA or 1.0
+
+    self.text = self.text or "Label"
+end
+function UILabel:draw()
+    UIElement:draw()
+
+    love.graphics.setColor(self.backgroundColorR, self.backgroundColorG, self.backgroundColorB, self.backgroundColorA)
+    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
+    love.graphics.setColor(self.textColorR, self.textColorG, self.textColorB, self.textColorA)
+    drawCenteredText(self.x, self.y, self.w, self.h, self.text)
+end
+
+UIImageLabel = UILabel:new()
+function UIImageLabel:init()
+    UILabel.init(self)
+    if self.spritePath ~= nil then
+        self.sprite, self.masks = clipMask(self.spritePath)
+    end
+end
+function UIImageLabel:draw()
+    UIElement:draw()
+
+    love.graphics.setColor(self.backgroundColorR, self.backgroundColorG, self.backgroundColorB, self.backgroundColorA)
+    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
+    love.graphics.setColor(self.textColorR, self.textColorG, self.textColorB, self.textColorA)
+    love.graphics.draw(self.sprite, self.x + self.w / 2 - self.sprite:getWidth() / 2, self.y + self.h / 2 - self.sprite:getHeight() / 2, 0)
 end
 
 UISeed = UIElement:new()
@@ -310,7 +375,7 @@ function UIInventory:init()
             y = love.graphics.getHeight() / 2 + self.radius * math.cos(angle),
             type = v,
             onMoved = function(x, y)
-                local prev = self.seeds[i].isInCentre 
+                local prev = self.seeds[i].isInCentre
                 if (x - love.graphics.getWidth() / 2)^2 + (y - love.graphics.getHeight() / 2)^2 < self.innerRadius^2 then 
                     self.seeds[i].isInCentre = true
                 else
@@ -378,3 +443,6 @@ end
 
 --Inventory1 = UIInventory:spawn({seeds = {1,2,1,2,1}})
 HealthBar = UIHealthBar:spawn({x=32, y=32, w=128, h=32})
+ImageButton = UIImageButton:spawn({x=32, y=64+8, w=64, h=64, spritePath="walk19.png"})
+TestLabel = UILabel:spawn({x=32, y=128+16, w=64, h=32, text="fuck this shit"})
+TestImageLabel = UIImageLabel:spawn({x=32, y=128+64+16+8, w=64, h=64, spritePath="walk19.png"})
