@@ -77,11 +77,6 @@ function love.update(dt) -- dt in seconds
     elseif not player.dir.x == 0 then
         player.dir.x = 0
     end
-
-    -- do ui events
-    for i, v in ipairs(activeUIElements) do
-        v:handleMousePosition(love.mouse.getX(), love.mouse.getY())
-    end
 end
 
 function love.draw()
@@ -103,10 +98,27 @@ function love.keypressed(key)
     end
 end
 
-function love.mousepressed(x, y, button)
-    if button == 1 then
-        for i, v in ipairs(activeUIElements) do
-            v:handleMouseDown()
+function love.mousepressed(x, y, button) dispatchMouseEvent({x=x, y=y, type="mousepressed", button=button}) end
+function love.mousereleased(x, y, button) dispatchMouseEvent({x=x, y=y, type="mousereleased", button=button}) end
+function love.mousemoved(x, y, dx, dy) dispatchMouseEvent({x=x, y=y, type="mousemoved", dx=dx, dy=dy}) end
+
+lastItem = nil
+
+function dispatchMouseEvent(event)
+    for i, v in ipairs(activeUIElements) do
+        if v.hittest(event.x, event.y) then
+            v:dispatch(event)
+            if event.type == "mousemoved" and lastItem ~= v then
+                if lastItem ~= nil then
+                    lastItem:dispatch({x=event.x, y=event.y, type="mouseexit"})
+                end
+                v:dispatch({x=event.x, y=event.y, type="mouseenter"})
+                lastItem = v
+            end
+        elseif event.type == "mousemoved" and v == lastItem and lastItem ~= nil then
+            lastItem:dispatch({x=event.x, y=event.y, type="mouseexit"})
+            lastItem = nil
         end
+
     end
 end
