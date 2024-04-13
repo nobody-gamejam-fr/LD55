@@ -1,4 +1,5 @@
 require("helpers")
+require("overlays")
 gOff = {x = 0, y = 0} -- global offset
 hazards = {}
 Body = { -- call Body:new() for a new class and body:spawn() for an instance (also applies to any subclass)
