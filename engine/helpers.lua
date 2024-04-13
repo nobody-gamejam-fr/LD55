@@ -72,3 +72,20 @@ range = function(a, b, c)
     return start - step
   end
 end
+
+reduce = function(list, init, func)
+    local acc = init
+    for i, v in ipairs(list) do
+        -- typechecking is for pussies
+        acc = func(acc, v)
+    end 
+    return acc
+end
+
+reduceIndexed = function(list, init, func)
+    local acc = init
+    for i, v in ipairs(list) do
+        acc = func(acc, i, v)
+    end
+    return acc
+end
