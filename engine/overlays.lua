@@ -333,6 +333,40 @@ function UIInventory:draw()
     for i, v in ipairs(self.seeds) do
         v:draw()
     end
+    love.graphics.reset()
+end
+
+UIHealthBar = UIElement:new()
+function UIHealthBar:init()
+    UIElement.init(self)
+    self.x = self.x or 32
+    self.y = self.y or 32
+    self.w = self.w or 128
+    self.h = self.h or 32
+
+    self.health = self.health or 40
+    self.maxHealth = self.maxHealth or 100
+end
+function UIHealthBar:draw()
+    UIElement.draw()
+
+    local healthPct = self.health / self.maxHealth
+    local healthText = string.format("%d / %d", self.health, self.maxHealth)
+
+    love.graphics.setColor(0.2, 0.2, 0.2, 1.0)
+    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h) -- background
+    if healthPct > 0.4 then
+        love.graphics.setColor(0.2, 0.8, 0.3, 1.0)
+    elseif healthPct > 0.1 then
+        love.graphics.setColor(0.8, 0.7, 0.2, 1.0)
+    else
+        love.graphics.setColor(0.8, 0.2, 0.1, 1.0)
+    end
+    love.graphics.rectangle("fill", self.x, self.y, self.w * healthPct, self.h) -- foreground
+    love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+    love.graphics.rectangle("line", self.x, self.y, self.w, self.h) -- outline
+    drawCenteredText(self.x, self.y, self.w, self.h, healthText)
+    love.graphics.reset()
 end
 
 --[[Button1 = UIButton:spawn({
@@ -342,4 +376,5 @@ end
     end
 })]]
 
-Inventory1 = UIInventory:spawn({seeds = {1,2,1,2,1}})
+--Inventory1 = UIInventory:spawn({seeds = {1,2,1,2,1}})
+HealthBar = UIHealthBar:spawn({x=32, y=32, w=128, h=32})
