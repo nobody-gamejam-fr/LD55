@@ -1,6 +1,7 @@
 require("world")
 require("characters")
 require("collisions")
+require("overlays")
 function love.load() -- game init
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
@@ -76,11 +77,19 @@ function love.update(dt) -- dt in seconds
     elseif not player.dir.x == 0 then
         player.dir.x = 0
     end
+
+    -- do ui events
+    for i, v in ipairs(activeUIElements) do
+        v:handleMousePosition(love.mouse.getX(), love.mouse.getY())
+    end
 end
 
 function love.draw()
     drawWorld()
     for i, v in ipairs(activeChars) do
+        v:draw()
+    end
+    for i, v in ipairs(activeUIElements) do
         v:draw()
     end
 end
@@ -91,5 +100,13 @@ function love.keypressed(key)
         player = Player:spawn()
         player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
         gOff = {x = 0, y = 0}
+    end
+end
+
+function love.mousepressed(x, y, button)
+    if button == 1 then
+        for i, v in ipairs(activeUIElements) do
+            v:handleMouseDown()
+        end
     end
 end
