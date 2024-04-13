@@ -5,11 +5,14 @@ function love.load() -- game init
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
     
+    enemy = Enemy:spawn({spritePath = 'Walk19.png'})
+    enemy:moveTo(300, 300)
+    
     love.graphics.setBackgroundColor(6/255,21/255,24/255)
     love.graphics.setNewFont(12)
     
     mapBounds = {  -- in fractions of screen size so resizing is less of a pain
-            y = {min = 0, max = 1}, x = {min = nil, max = nil},
+            y = {min = nil, max = nil}, x = {min = -0.5, max = 1.5},
             scrollY = {min = nil, max = nil}, scrollX = {min = 0.2, max = 0.8}
         }
 end 
@@ -32,6 +35,15 @@ function love.update(dt) -- dt in seconds
                 local collision = willCollide(player, v, {y = moved.y})
                 if collision.y ~= false then
                     moved.y = magmin(moved.y, findCollision(player, v, {y = moved.y}, collision).y)
+                end
+            end
+            for i, v in ipairs(activeChars) do
+                if v ~= player then 
+                    local collision = willCollide(player, v, {y = moved.y})
+                    if collision.y ~= false then
+                        print('colliding')
+                        moved.y = magmin(moved.y, findCollision(player, v, {y = moved.y}, collision).y)
+                    end
                 end
             end
             player.y = player.y + moved.y
@@ -65,6 +77,14 @@ function love.update(dt) -- dt in seconds
                 end
             end
             player.x = player.x + moved.x
+        end
+        for i, v in ipairs(activeChars) do
+            if v ~= player then 
+                local collision = willCollide(player, v, {x = moved.x})
+                if collision.x ~= false then
+                    moved.x = magmin(moved.x, findCollision(player, v, {x = moved.x}, collision).x)
+                end
+            end
         end
         
         if mapBounds.scrollX.max ~= nil  and player.x + gOff.x >= love.graphics.getWidth() * mapBounds.scrollX.max then

@@ -42,6 +42,7 @@ function fuzzyCheckY(a, b, yi, yf, dir)
   amin = round(math.max(0, b.x - a.x))
   bmin = round(math.max(0, a.x - b.x))
   len = round(math.min(a.w - 1, a.x + a.w - b.x, b.w - bmin - 1))
+  
   for j = round(yi), round(yf), dir do 
     for i = 0, len do
       if a:yProjSolidAt(amin + i) and b:isSolidAtLocal(bmin + i, j) then
@@ -77,9 +78,12 @@ function willCollide(a, b, travel) -- a must be the moving object
         y = fuzzyCheckY(a, b, math.max(0, dy - travel.y), dy, 1)
       else y = false end
     else -- moving up, or not at all
-      if (a.y > b.y and a.y + travel.y <= b.y + b.h) or (a.y + travel.y <= b.y and a.y + a.h > b.y) then 
+      print('comin at ya')
+      if (a.y > b.y and a.y + travel.y <= b.y + b.h) or (a.y + travel.y <= b.y and a.y + a.h > b.y) then
+        print('touching-ish')
         dy = iif(a.y < b.y, math.max(a.y - b.y + a.h - 1, 0), math.min(a.y - b.y, b.h - 1))
         y = fuzzyCheckY(a, b, dy, math.max(dy + travel.y, b.y), -1)
+        print('y is', y)
       else y = false end
     end
   elseif travel.y == nil and travel.x ~= nil and not (a.y + a.h < b.y or b.y + b.h < a.y) then

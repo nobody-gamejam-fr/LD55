@@ -7,4 +7,9 @@ function Character:init()
   table.insert(activeChars, self)
 end
 
-Player = Character:new({spritePath='walk19.png', name='player'})
+Player = Character:new({spritePath='sappy.png', name='player'})
+
+Enemy = Character:new({flags = {'hostile'}})
+function Enemy:init()
+  Character.init(self)
+end
