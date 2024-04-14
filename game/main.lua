@@ -20,7 +20,7 @@ function love.load() -- game init
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
 
-    enemy = Enemy:spawn({spritePath = 'walk19.png'}) -- REMOVE
+    enemy = Enemy:spawn({spritePath = 'assets/walk19.png'}) -- REMOVE
     enemy:moveTo(300, 300)
     
     love.graphics.setBackgroundColor(6/255,21/255,24/255)
@@ -30,16 +30,21 @@ function love.load() -- game init
             y = {min = nil, max = nil}, x = {min = -0.5, max = 1.5},
             scrollY = {min = nil, max = nil}, scrollX = {min = 0.2, max = 0.8}
         }
+    musicPlayer = love.audio.newSource('assets/plantycaverloop.mp3', 'static')
+    musicPlayer:setLooping(true)
+    --love.audio.play(musicPlayer) -- TODO: uncomment for prod
 end
 
 function love.update(dt) -- dt in seconds
     if gameState.playing then
+        local move = {}
         if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
-            player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
+            move.y = iif(love.keyboard.isDown('w'), -1, 1)
         end
         if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
-            player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+            move.x = iif(love.keyboard.isDown('a'), -1, 1)
         end
+        player:move(move.x, move.y, dt)
         for i, v in ipairs(activeChars) do
             --if player ~= v then v:decideMove(dt) end
         end
@@ -60,7 +65,7 @@ function love.draw()
     elseif gameState.menu then drawMenu() end
 end
 
-function drawMenu() 
+function drawMenu()
     for _, v in ipairs(activeUIElements) do
         v:drawImpl()
     end

@@ -8,7 +8,7 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     obj = obj or {}
     setmetatable(obj, self)
     self.__index = self
-    if obj.spritePath then obj.sprite, obj.masks = clipMask(obj.spritePath) end
+    if obj.spritePath then obj.sprite, obj.masks = iif(obj.anim, loadSpriteSheet, clipMask)({spritePath = obj.spritePath, w = obj.w}) end
     return obj
   end,
   init = function(self)
@@ -16,7 +16,7 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     self.y = self.y or 0
     self.dir = self.dir or {x = 0, y = 0}
     self.spriteDir = self.spriteDir or {x = 1, y = 1}
-    if not self.sprite then self.sprite, self.masks = clipMask(self.spritePath) end -- should usually already exist, so that sprites are shared between instances of classes
+    if not self.sprite then self.sprite, self.masks = iif(self.anim, loadSpriteSheet, clipMask)({spritePath = self.spritePath, w = self.w}) end -- should usually already exist, so that sprites are shared between instances of classes
     self.w, self.h = self.sprite:getDimensions()
     if self.alignToBottom then self.y = love.graphics.getHeight() - self.h end
   end,
@@ -48,8 +48,13 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     return self.masks.xProj[round(y)]
   end,
   draw = function(self) -- can only be called in love.draw
-    if self.spriteDir.x == -1 then love.graphics.draw(self.sprite, self.x + gOff.x + self.sprite:getWidth()/2, self.y + gOff.y + self.sprite:getHeight()/2, 0, -1, 1, self.sprite:getWidth()/2, self.sprite:getHeight()/2)
-    else love.graphics.draw(self.sprite, self.x + gOff.x, self.y + gOff.y, 0) end-- img, x, y, rotation (rad), scaleX, scaleY, originX, originY...
+    if self.anim then
+      if self.spriteDir.x == -1 then love.graphics.draw(self.sprite.spriteSheet, self.sprite.quads[self.sprite.frame], self.x + gOff.x + self.w/2, self.y + gOff.y + self.h/2, 0, -1, 1, self.w/2, self.h/2)
+      else love.graphics.draw(self.sprite.spriteSheet, self.sprite.quads[self.sprite.frame], self.x + gOff.x, self.y + gOff.y, 0) end
+    else
+      if self.spriteDir.x == -1 then love.graphics.draw(self.sprite, self.x + gOff.x + self.sprite:getWidth()/2, self.y + gOff.y + self.sprite:getHeight()/2, 0, -1, 1, self.sprite:getWidth()/2, self.sprite:getHeight()/2)
+      else love.graphics.draw(self.sprite, self.x + gOff.x, self.y + gOff.y, 0) end-- img, x, y, rotation (rad), scaleX, scaleY, originX, originY...
+    end
   end
 }
 
@@ -68,9 +73,9 @@ function BackgroundTile:init()
 end
 
 local tiles = {
-    roof = { Hazard:spawn({spritePath = 'roof.png'}) },
+    roof = { Hazard:spawn({spritePath = 'assets/roof.png'}) },
     floor = { --[[Hazard:spawn({spritePath = 'floor.png', alignToBottom = true})]] },
-    floorBG = { BackgroundTile:spawn({spritePath = "floor.png", alignToBottom = true}) },
+    floorBG = { BackgroundTile:spawn({spritePath = "assets/floor.png", alignToBottom = true}) },
 }
 local add_tile = function(tab, tile, prop)
   if tile[prop] < tab[1][prop] then table.insert(tab, 1, tile)
@@ -83,9 +88,9 @@ drawWorld = function()
     elseif tiles.roof[#tiles.roof].x + gOff.x < love.graphics.getWidth() then xoff = tiles.roof[#tiles.roof].x + tiles.roof[#tiles.roof].w end
 
     if xoff ~= nil then -- assumes floor and roof are same width
-        add_tile(tiles.roof, Hazard:spawn({spritePath = 'roof.png', x = xoff}), 'x')
+        add_tile(tiles.roof, Hazard:spawn({spritePath = 'assets/roof.png', x = xoff}), 'x')
         --add_tile(tiles.floor, Hazard:spawn({spritePath = 'floor.png', x = xoff, alignToBottom = true}), 'y')
-        add_tile(tiles.floorBG, BackgroundTile:spawn({spritePath = "floor.png", x = xoff, alignToBottom = true}), "y")
+        add_tile(tiles.floorBG, BackgroundTile:spawn({spritePath = "assets/floor.png", x = xoff, alignToBottom = true}), "y")
     end
 
   for k,v in pairs(tiles) do

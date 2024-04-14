@@ -37,7 +37,6 @@ function Character:move(x, y, dt)
   elseif not self.dir.y == 0 then
     self.dir.y = 0
   end
-  
   if x then
     self.dir.x = x
     if self.dir.x ~= self.spriteDir.x then
@@ -76,15 +75,16 @@ function Character:move(x, y, dt)
         end
       end
       self.x = self.x + moved.x
+      if self.anim then self.sprite:tick(math.abs(moved.x)) end
     end
-    
-  elseif not self.dir.x == 0 then
-    self.dir.x = 0
+  else
+    if not self.dir.x == 0 then self.dir.x = 0 end
+    if self.anim then self.sprite:stop() end
   end
   return moved
 end
 
-Player = Character:new({spritePath='sappy.png', flags={player = true}})
+Player = Character:new({spritePath='assets/sappy_sprites.png', flags={player = true}, anim = true, w = 31})
 function Player:move(x, y, dt)
   local moved = Character.move(self, x, y, dt)
   if moved.y then
