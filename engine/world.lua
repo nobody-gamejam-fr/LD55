@@ -15,6 +15,7 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     self.x = self.x or 0
     self.y = self.y or 0
     self.dir = self.dir or {x = 0, y = 0}
+    self.spriteDir = self.spriteDir or {x = 1, y = 1}
     if not self.sprite then self.sprite, self.masks = clipMask(self.spritePath) end -- should usually already exist, so that sprites are shared between instances of classes
     self.w, self.h = self.sprite:getDimensions()
     if self.alignToBottom then self.y = love.graphics.getHeight() - self.h end
@@ -36,15 +37,18 @@ Body = { -- call Body:new() for a new class and body:spawn() for an instance (al
     return self:isSolidAtLocal(x - self.x, y - self.y)
   end,
   isSolidAtLocal = function(self, x, y)
-    if self.dir.x ~= -1 then return self.masks.full[round(y)][round(x)]
+    if self.spriteDir.x ~= -1 then return self.masks.full[round(y)][round(x)]
     else return self.masks.full[round(y)][round(self.w - x)] end
   end,
-  yProjSolidAt = function(self, x)  -- add xProjSolidAt if any sprite respects dir.y
-    if self.dir.x ~= -1 then return self.masks.yProj[round(x)]
+  yProjSolidAt = function(self, x)  
+    if self.spriteDir.x ~= -1 then return self.masks.yProj[round(x)]
     else return self.masks.yProj[round(self.w - x)] end
   end,
+  xProjSolidAt = function(self, y)
+    return self.masks.xProj[round(y)]
+  end,
   draw = function(self) -- can only be called in love.draw
-    if self.dir.x == -1 then love.graphics.draw(self.sprite, self.x + gOff.x + self.sprite:getWidth()/2, self.y + gOff.y + self.sprite:getHeight()/2, 0, -1, 1, self.sprite:getWidth()/2, self.sprite:getHeight()/2)
+    if self.spriteDir.x == -1 then love.graphics.draw(self.sprite, self.x + gOff.x + self.sprite:getWidth()/2, self.y + gOff.y + self.sprite:getHeight()/2, 0, -1, 1, self.sprite:getWidth()/2, self.sprite:getHeight()/2)
     else love.graphics.draw(self.sprite, self.x + gOff.x, self.y + gOff.y, 0) end-- img, x, y, rotation (rad), scaleX, scaleY, originX, originY...
   end
 }
