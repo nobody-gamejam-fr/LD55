@@ -20,7 +20,7 @@ function love.load() -- game init
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
 
-    enemy = Enemy:spawn({spritePath = 'walk19.png'}) -- REMOVE
+    enemy = Enemy:spawn({spritePath = 'assets/walk19.png'}) -- REMOVE
     enemy:moveTo(300, 300)
     
     love.graphics.setBackgroundColor(6/255,21/255,24/255)

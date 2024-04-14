@@ -73,9 +73,9 @@ function BackgroundTile:init()
 end
 
 local tiles = {
-    roof = { Hazard:spawn({spritePath = 'roof.png'}) },
+    roof = { Hazard:spawn({spritePath = 'assets/roof.png'}) },
     floor = { --[[Hazard:spawn({spritePath = 'floor.png', alignToBottom = true})]] },
-    floorBG = { BackgroundTile:spawn({spritePath = "floor.png", alignToBottom = true}) },
+    floorBG = { BackgroundTile:spawn({spritePath = "assets/floor.png", alignToBottom = true}) },
 }
 local add_tile = function(tab, tile, prop)
   if tile[prop] < tab[1][prop] then table.insert(tab, 1, tile)
@@ -88,9 +88,9 @@ drawWorld = function()
     elseif tiles.roof[#tiles.roof].x + gOff.x < love.graphics.getWidth() then xoff = tiles.roof[#tiles.roof].x + tiles.roof[#tiles.roof].w end
 
     if xoff ~= nil then -- assumes floor and roof are same width
-        add_tile(tiles.roof, Hazard:spawn({spritePath = 'roof.png', x = xoff}), 'x')
+        add_tile(tiles.roof, Hazard:spawn({spritePath = 'assets/roof.png', x = xoff}), 'x')
         --add_tile(tiles.floor, Hazard:spawn({spritePath = 'floor.png', x = xoff, alignToBottom = true}), 'y')
-        add_tile(tiles.floorBG, BackgroundTile:spawn({spritePath = "floor.png", x = xoff, alignToBottom = true}), "y")
+        add_tile(tiles.floorBG, BackgroundTile:spawn({spritePath = "assets/floor.png", x = xoff, alignToBottom = true}), "y")
     end
 
   for k,v in pairs(tiles) do

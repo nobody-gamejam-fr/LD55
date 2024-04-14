@@ -84,7 +84,7 @@ function Character:move(x, y, dt)
   return moved
 end
 
-Player = Character:new({spritePath='sappy_sprites.png', flags={player = true}, anim = true, w = 31})
+Player = Character:new({spritePath='assets/sappy_sprites.png', flags={player = true}, anim = true, w = 31})
 function Player:move(x, y, dt)
   local moved = Character.move(self, x, y, dt)
   if moved.y then
