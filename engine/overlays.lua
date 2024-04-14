@@ -22,6 +22,7 @@ UIElement = {
         self.w = self.w or 0
         self.h = self.h or 0
 
+        self.visible = true
         self.dispatchTable = {}
         self.hittest = self.hittest or function(mx, my) return false end
 
@@ -34,11 +35,14 @@ UIElement = {
     end,
     draw = function()
     end,
+    drawImpl = function(self)
+        if self.visible then self:draw() end
+    end,
 
     -- events
     dispatch = function(self, event)
-        for i, v in ipairs(self.dispatchTable) do
-            if v.type == event.type then v.handle(event) end
+        for _, v in ipairs(self.dispatchTable) do
+            if v.type == event.type and self.visible then v.handle(event) end
         end
     end,
     addEventListener = function(self, type, handle)
@@ -49,14 +53,14 @@ UIElement = {
 UIButton = UIElement:new()
 function UIButton:init()
     UIElement.init(self)
-    self.colorR = self.colorR or 0.8
-    self.colorG = self.colorG or 0.0
-    self.colorB = self.colorB or 0.8
+    self.colorR = self.colorR or 0.2
+    self.colorG = self.colorG or 0.2
+    self.colorB = self.colorB or 0.2
     self.colorA = self.colorA or 1.0
 
-    self.hoverColorR = self.hoverColorR or 1.0
-    self.hoverColorG = self.hoverColorG or 0.0
-    self.hoverColorB = self.hoverColorB or 1.0
+    self.hoverColorR = self.hoverColorR or 0.4
+    self.hoverColorG = self.hoverColorG or 0.4
+    self.hoverColorB = self.hoverColorB or 0.4
     self.hoverColorA = self.hoverColorA or 1.0
 
     self.disabledColorR = self.disabledColorR or 0.8
@@ -434,15 +438,17 @@ function UIHealthBar:draw()
     love.graphics.reset()
 end
 
---[[Button1 = UIButton:spawn({
+--[[
+Button1 = UIButton:spawn({
     x=100, y=100, w=100, h=100,
     onClick=function()
         print("click motherfucker")
     end
-})]]
+})
 
---Inventory1 = UIInventory:spawn({seeds = {1,2,1,2,1}})
+Inventory1 = UIInventory:spawn({seeds = {1,2,1,2,1}})
 HealthBar = UIHealthBar:spawn({x=32, y=32, w=128, h=32})
 ImageButton = UIImageButton:spawn({x=32, y=64+8, w=64, h=64, spritePath="walk19.png"})
 TestLabel = UILabel:spawn({x=32, y=128+16, w=64, h=32, text="fuck this shit"})
 TestImageLabel = UIImageLabel:spawn({x=32, y=128+64+16+8, w=64, h=64, spritePath="walk19.png"})
+]]
