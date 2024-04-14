@@ -3,6 +3,7 @@ require("characters")
 require("collisions")
 require("overlays")
 function love.load() -- game init
+    gameState = {playing = true}
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
 
@@ -19,21 +20,30 @@ function love.load() -- game init
 end 
 
 function love.update(dt) -- dt in seconds
-    if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
-        player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
-    end
-    if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
-        player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+    if gameState.playing then
+        if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
+            player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
+        end
+        if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
+            player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+        end
+        for i, v in ipairs(activeChars) do
+            --if player ~= v then v:decideMove(dt) end
+        end
     end
 end
 
 function love.draw()
-    drawWorld()
-    for i, v in ipairs(activeChars) do
-        v:draw()
-    end
-    for i, v in ipairs(activeUIElements) do
-        v:draw()
+    if gameState.playing then
+        drawWorld()
+        for i, v in ipairs(activeChars) do
+            v:draw()
+        end
+        for i, v in ipairs(activeUIElements) do
+            v:draw()
+        end
+    else
+        -- if paused?
     end
 end
 
