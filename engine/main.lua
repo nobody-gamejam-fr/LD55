@@ -4,12 +4,11 @@ require("collisions")
 require("overlays")
 require("menus.main_menu")
 
-gameState = "menu"
-
 function love.load() -- game init
+    gameState = {playing = true}
     mainMenuSetListeners(
         function()
-            gameState = "game"
+            gameState.playing = true
             for _, v in pairs(menuElements) do v.visible = false end
         end
     )
@@ -30,39 +29,34 @@ function love.load() -- game init
 end
 
 function love.update(dt) -- dt in seconds
-    if gameState == "menu" then menuUpdate(dt)
-    elseif gameState == "game" then gameUpdate(dt)
-    end
-end
-
-function menuUpdate(dt) end
-
-function gameUpdate(dt)
-    if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
-        player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
-    end
-    if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
-        player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+    if gameState.playing then
+        if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
+            player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
+        end
+        if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
+            player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+        end
+        for i, v in ipairs(activeChars) do
+            --if player ~= v then v:decideMove(dt) end
+        end
+    elseif gameState.menu then 
+      
     end
 end
 
 function love.draw()
-    if gameState == "menu" then drawMenu()
-    elseif gameState == "game" then drawGame()
-    end
+    if gameState.playing then
+        drawWorld()
+        for i, v in ipairs(activeChars) do
+            v:draw()
+        end
+        for i, v in ipairs(activeUIElements) do
+            v:draw()
+        end
+    elseif gameState.menu then drawMenu() end
 end
 
 function drawMenu() 
-    for _, v in ipairs(activeUIElements) do
-        v:drawImpl()
-    end
-end
-
-function drawGame()
-    drawWorld()
-    for _, v in ipairs(activeChars) do
-        v:draw()
-    end
     for _, v in ipairs(activeUIElements) do
         v:drawImpl()
     end

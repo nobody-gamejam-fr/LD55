@@ -84,7 +84,7 @@ function Character:move(x, y, dt)
   return moved
 end
 
-Player = Character:new({spritePath='sappy.png', name='player'})
+Player = Character:new({spritePath='sappy.png', flags={player = true}})
 function Player:move(x, y, dt)
   local moved = Character.move(self, x, y, dt)
   if moved.y then
@@ -104,7 +104,11 @@ function Player:move(x, y, dt)
   return moved
 end
 
-Enemy = Character:new({flags = {'hostile'}})
+Enemy = Character:new({flags = {hostile = true}})
 function Enemy:init()
   Character.init(self)
+  self.speed = self.speed / 4 -- temp
+end
+function Enemy:decideMove(dt) -- shittiest AI of all time, probably only good for testing
+  self:move(iif(self.x < player.x, 1, -1), iif(self.y < player.y, 1, -1), dt)
 end
