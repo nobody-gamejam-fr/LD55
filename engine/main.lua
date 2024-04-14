@@ -2,12 +2,21 @@ require("world")
 require("characters")
 require("collisions")
 require("overlays")
+require("menus.main_menu")
+
 function love.load() -- game init
     gameState = {playing = true}
+    mainMenuSetListeners(
+        function()
+            gameState.playing = true
+            for _, v in pairs(menuElements) do v.visible = false end
+        end
+    )
+
     player = Player:spawn()
     player:moveTo(math.floor(love.graphics.getWidth()/2), math.floor(love.graphics.getHeight()/2))
 
-    enemy = Enemy:spawn({spritePath = 'Walk19.png'}) -- REMOVE
+    enemy = Enemy:spawn({spritePath = 'walk19.png'}) -- REMOVE
     enemy:moveTo(300, 300)
     
     love.graphics.setBackgroundColor(6/255,21/255,24/255)
@@ -17,7 +26,7 @@ function love.load() -- game init
             y = {min = nil, max = nil}, x = {min = -0.5, max = 1.5},
             scrollY = {min = nil, max = nil}, scrollX = {min = 0.2, max = 0.8}
         }
-end 
+end
 
 function love.update(dt) -- dt in seconds
     if gameState.playing then
@@ -30,6 +39,8 @@ function love.update(dt) -- dt in seconds
         for i, v in ipairs(activeChars) do
             --if player ~= v then v:decideMove(dt) end
         end
+    elseif gameState.menu then 
+      
     end
 end
 
@@ -42,8 +53,12 @@ function love.draw()
         for i, v in ipairs(activeUIElements) do
             v:draw()
         end
-    else
-        -- if paused?
+    elseif gameState.menu then drawMenu() end
+end
+
+function drawMenu() 
+    for _, v in ipairs(activeUIElements) do
+        v:drawImpl()
     end
 end
 
