@@ -12,7 +12,7 @@ end
 
 deepEq = function(a1, a2)
   if #a1 ~= #a2 then return false end
-  for i, v in ipairs(a1) do 
+  for i, v in ipairs(a1) do
     if v ~= a2[i] then return false end
   end
   return true
