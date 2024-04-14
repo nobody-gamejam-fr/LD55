@@ -65,7 +65,7 @@ function love.draw()
     elseif gameState.menu then drawMenu() end
 end
 
-function drawMenu() 
+function drawMenu()
     for _, v in ipairs(activeUIElements) do
         v:drawImpl()
     end
