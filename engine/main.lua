@@ -5,9 +5,13 @@ require("overlays")
 require("menus.main_menu")
 
 function love.load() -- game init
-    gameState = {playing = true}
+    gameState = {
+        menu = true,
+        playing = false
+    }
     mainMenuSetListeners(
         function()
+            gameState.menu = false
             gameState.playing = true
             for _, v in pairs(menuElements) do v.visible = false end
         end
@@ -51,7 +55,7 @@ function love.draw()
             v:draw()
         end
         for i, v in ipairs(activeUIElements) do
-            v:draw()
+            v:drawImpl()
         end
     elseif gameState.menu then drawMenu() end
 end
