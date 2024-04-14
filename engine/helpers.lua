@@ -89,3 +89,9 @@ reduceIndexed = function(list, init, func)
     end
     return acc
 end
+loadSpriteSheet('sappy_sprites.png',31, 56)
+loadSpriteSheet = function(path, w, h)
+  local anim = {}
+  anim.spriteSheet = love.graphics.newImage(path)
+  
+end

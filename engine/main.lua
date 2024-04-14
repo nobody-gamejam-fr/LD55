@@ -5,7 +5,7 @@ require("overlays")
 require("menus.main_menu")
 
 function love.load() -- game init
-    gameState = {playing = true}
+    gameState = {playing = true, menu = false}
     mainMenuSetListeners(
         function()
             gameState.playing = true
