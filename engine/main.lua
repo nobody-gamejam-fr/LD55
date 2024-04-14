@@ -34,12 +34,14 @@ end
 
 function love.update(dt) -- dt in seconds
     if gameState.playing then
+        local move = {}
         if love.keyboard.isDown('w') or love.keyboard.isDown('s') then
-            player:move(nil, iif(love.keyboard.isDown('w'), -1, 1), dt)
+            move.y = iif(love.keyboard.isDown('w'), -1, 1)
         end
         if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
-            player:move(iif(love.keyboard.isDown('a'), -1, 1), nil, dt)
+            move.x = iif(love.keyboard.isDown('a'), -1, 1)
         end
+        player:move(move.x, move.y, dt)
         for i, v in ipairs(activeChars) do
             --if player ~= v then v:decideMove(dt) end
         end
