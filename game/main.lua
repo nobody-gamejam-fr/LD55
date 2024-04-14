@@ -30,6 +30,9 @@ function love.load() -- game init
             y = {min = nil, max = nil}, x = {min = -0.5, max = 1.5},
             scrollY = {min = nil, max = nil}, scrollX = {min = 0.2, max = 0.8}
         }
+    musicPlayer = love.audio.newSource('assets/plantycaverloop.mp3', 'static')
+    musicPlayer:setLooping(true)
+    --love.audio.play(musicPlayer) -- TODO: uncomment for prod
 end
 
 function love.update(dt) -- dt in seconds
